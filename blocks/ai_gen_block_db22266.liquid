@@ -1,0 +1,115 @@
+{% doc %}
+  @prompt
+    Ich möchte einfach nur ein Bild einfügen, das auf der Mobilen und Desktop Version immer voll angezeigt wird.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-full-width-image-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ai-full-width-image-wrapper-{{ ai_gen_id }} {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ai-full-width-image-wrapper-{{ ai_gen_id }} img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: {{ block.settings.image_fit }};
+  }
+
+  .ai-full-width-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 400px;
+  }
+
+  .ai-full-width-image-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 600px;
+    max-height: 400px;
+  }
+
+  .ai-full-width-empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 20px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    pointer-events: none;
+  }
+{% endstyle %}
+
+<div class="ai-full-width-image-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-full-width-image-wrapper-{{ ai_gen_id }}">
+    {% if block.settings.image %}
+      <img
+        src="{{ block.settings.image | image_url: width: 2000 }}"
+        alt="{{ block.settings.image.alt | escape }}"
+        loading="lazy"
+        width="{{ block.settings.image.width }}"
+        height="{{ block.settings.image.height }}"
+      >
+    {% else %}
+      <div class="ai-full-width-image-placeholder-{{ ai_gen_id }}">
+        {{ 'image' | placeholder_svg_tag }}
+        <div class="ai-full-width-empty-state-{{ ai_gen_id }}">
+          Bild hinzufügen
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Vollbreites Bild",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Bild"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Bildanpassung",
+      "options": [
+        {
+          "value": "cover",
+          "label": "Abdecken"
+        },
+        {
+          "value": "contain",
+          "label": "Enthalten"
+        },
+        {
+          "value": "fill",
+          "label": "Ausfüllen"
+        }
+      ],
+      "default": "cover"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Vollbreites Bild"
+    }
+  ]
+}
+{% endschema %}
